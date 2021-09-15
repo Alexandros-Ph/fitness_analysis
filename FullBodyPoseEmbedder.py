@@ -1,15 +1,5 @@
-import mediapipe as mp
-from matplotlib import pyplot as plt
 import numpy as np
-import os, csv
-
-
-def show_image(img, figsize=(10, 10)):
-  """Shows output PIL image."""
-  plt.figure(figsize=figsize)
-  plt.imshow(img)
-  plt.show()
-
+import math
 
 class FullBodyPoseEmbedder(object):
   """Converts 3D pose landmarks into 3D embedding."""
@@ -128,7 +118,12 @@ class FullBodyPoseEmbedder(object):
       Numpy array with pose embedding of shape (M, 3) where `M` is the number of
       pairwise distances.
     """
+
+
     embedding = np.array([
+        self._get_angle_by_names(landmarks, 'left_shoulder', 'left_hip', 'left_shoulder', 'left_wrist'),
+        self._get_angle_by_names(landmarks, 'right_shoulder', 'right_hip', 'right_shoulder', 'right_wrist'),
+
         # One joint.
 
         self._get_distance(
@@ -199,3 +194,13 @@ class FullBodyPoseEmbedder(object):
 
   def _get_distance(self, lmk_from, lmk_to):
     return lmk_to - lmk_from
+
+  def _get_angle_by_names(self, landmarks, name_1_from, name_1_to, name_2_from, name_2_to):
+    vector_1 = self._get_distance_by_names(landmarks, name_1_from, name_1_to)
+    vector_2 = self._get_distance_by_names(landmarks, name_2_from, name_2_to)
+    vector_1 = vector_1[:2]
+    vector_2 = vector_2[:2]
+    norms = np.linalg.norm(vector_1) * np.linalg.norm(vector_2)
+    dot_product = np.dot(vector_1, vector_2)
+    rad = np.arccos(dot_product / norms)
+    return int(math.degrees(rad))

@@ -3,7 +3,7 @@ import pathlib
 
 
 def vtoimg(exercise):
-    vidcap = cv2.VideoCapture("Data/" + exercise + "/video/trainer.mp4")
+    vidcap = cv2.VideoCapture("Data/" + exercise + "/video/test_raises.mp4")
     success,image = vidcap.read()
     print(success)
     count = 0
@@ -13,5 +13,5 @@ def vtoimg(exercise):
       #print('Read a new frame: ', success)
       count += 1
 
-exercise = "Side_Lateral_Raise"
+exercise = "test"
 vtoimg(exercise)
